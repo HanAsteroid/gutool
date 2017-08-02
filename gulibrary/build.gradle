@@ -1,0 +1,66 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'//添加
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+//添加
+publish {
+    userOrg = 'asteroidgu'//bintray.com用户名
+    groupId = 'com.asteroid'//jcenter上的路径
+    artifactId = 'guutil'//项目名称
+    publishVersion = '1.0.0'//版本号
+    desc = 'Oh hi, this is a nice description for a project, right?'//描述，不重要
+    website = 'http://muyuhaibei.com'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    testCompile 'junit:junit:4.12'
+}
+
+task makeJar(type: Copy) {
+    delete('build/libs/sdk.jar')
+    from('build/intermediates/bundles/default/')
+    into('build/libs/')
+    include('classes.jar')
+    //指定打包的class
+    rename ('classes.jar', 'sdk.jar')
+}
+//task makeJar(type: Jar) {
+//    delete('build/libs/sdk.jar')
+//    from file('build/intermediates/classes/release')
+//    archiveName = 'sdk.jar'
+//    destinationDir = file('build/libs')
+//    //过滤不需要的class
+//    exclude "**/**/BuildConfig.class"
+//    exclude "**/**/BuildConfig\$*.class"
+//    exclude "**/R.class"
+//    exclude "**/R\$*.class"
+//    //指定打包的class
+//    include "com/asteroid/**/*.class"
+//}
+makeJar.dependsOn(build)
+
+//打包命令  ./gradlew makeJar
